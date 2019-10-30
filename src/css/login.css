@@ -1,0 +1,35 @@
+
+.login-form {
+    max-width: 400px;
+    margin: auto;
+}
+.login-form-forgot {
+  float: left;
+}
+.login-form-button {
+  width: 100%;
+}
+.Container {
+  width: 65%;
+  height: 350px;
+}
+.h3{
+    margin-left: 200px;
+    padding-bottom: 10px;
+}
+.register{
+    width: 65%;
+  height: 500px;
+}
+
+button {
+   
+  background-color: #28a745;
+}
+.setMargin{
+    margin: 0px;
+}
+.icon{
+  vertical-align: 0em;
+}
+
