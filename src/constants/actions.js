@@ -15,4 +15,5 @@ export const LOGIN_FACEBOOK = 'LOGIN_FACEBOOK';
 export const RELOAD_DB = 'RELOAD_DB';
 export const PENDING_LOGIN = 'PENDING_LOGIN';
 export const EDIT_PASS = 'EDIT_PASS';
-export const SET_AUTO = 'SET_AUTO'
+export const SET_AUTO = 'SET_AUTO';
+export const FALSE_AUTO = 'FALSE_AUTO';

@@ -56,6 +56,11 @@ const tickSquare = (state = createInitialState(), action) => {
         currentUser: {},
         pending: false,
       };
+    case 'FALSE_AUTO':
+      return {
+        ...state,
+        isAuto: true,
+      }
     case 'GOTO_MOVE_WIN':
       return {
         ...state,

@@ -17,7 +17,8 @@ import {
   RELOAD_DB,
   PENDING_LOGIN,
   EDIT_PASS,
-  SET_AUTO
+  SET_AUTO,
+  FALSE_AUTO
 } from '../constants/actions';
 
 export const tickSquare = (index, newSquaresArr, history, xIsNext) => ({
@@ -27,6 +28,10 @@ export const tickSquare = (index, newSquaresArr, history, xIsNext) => ({
   history,
   xIsNext,
 });
+
+export const setFalseIsAuto = () => ({
+  type: FALSE_AUTO
+})
 
 export const setAuto = (isAuto)=> ({
   type: SET_AUTO,

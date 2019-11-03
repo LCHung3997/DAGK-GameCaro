@@ -5,20 +5,20 @@ import Board from './Board';
 
 class App extends React.Component {
   componentDidUpdate = () => {
+    
     const { state } = this.props;
     const { isAuto, check } = state;
-    console.log('isauto', isAuto);
     if (check) {
       return null;
     }
     if (isAuto === true) {
       setTimeout(() => {
         this.handleClick(Math.floor(Math.random() * 399));
-      }, 1000);
+      }, 500);
     }
     return null;
   };
-  
+
   handleClick = i => {
     const { state } = this.props;
     let { history } = state;
@@ -39,8 +39,8 @@ class App extends React.Component {
     }
 
     if (newSquaresArr[i] === null) {
+      const { setAuto} = this.props;
       const { isAuto } = state;
-      const { setAuto } = this.props;
       setAuto(isAuto);
       const length = 20;
       const arrTem = [];
@@ -318,86 +318,88 @@ class App extends React.Component {
   };
 
   jumpTo = step => {
+    console.log('step', step);
     const { state, goToMove, goToMoveWin } = this.props;
     const { history, checkWin, arrWinTemp } = state;
     const length = history.length - 1;
     if (checkWin === true && step === length) {
       goToMove(step, arrWinTemp);
-    } else {
+    }
+    else {
       goToMoveWin(step);
+      if (step % 2 !== 0) {
+        // console.log(state.isAuto);
+        const { SetFalseIsAuto } = this.props;
+        SetFalseIsAuto();
+        setTimeout(() => {
+          this.handleClick(Math.floor(Math.random() * 399));
+        }, 500);
+          
+      }
     }
   };
 
-  sort = list => {
-    const newList = [];
-    const { sortList } = this.props;
-    let size = list.length;
-    for (let i = 0; i < list.length; i += 1) {
-      newList.push(list[size - 1]);
-      size -= 1;
-    }
-    sortList(newList);
-  };
+  // sort = list => {
+  //   const newList = [];
+  //   const { sortList } = this.props;
+  //   let size = list.length;
+  //   for (let i = 0; i < list.length; i += 1) {
+  //     newList.push(list[size - 1]);
+  //     size -= 1;
+  //   }
+  //   sortList(newList);
+  // };
 
-  fIncrease = list => {
-    const { state, setIncrease } = this.props;
-    const { isDecrease } = state;
-    if (isDecrease) {
-      this.sort(list);
-      setIncrease();
-      return list;
-    }
-    return null;
-  };
+  // fIncrease = list => {
+  //   const { state, setIncrease } = this.props;
+  //   const { isDecrease } = state;
+  //   if (isDecrease) {
+  //     this.sort(list);
+  //     setIncrease();
+  //     return list;
+  //   }
+  //   return null;
+  // };
 
-  fDecrease = list => {
-    const { state, setDecrease } = this.props;
-    const { isIncrease } = state;
+  // fDecrease = list => {
+  //   const { state, setDecrease } = this.props;
+  //   const { isIncrease } = state;
 
-    if (isIncrease) {
-      this.sort(list);
-      setDecrease();
-      return list;
-    }
+  //   if (isIncrease) {
+  //     this.sort(list);
+  //     setDecrease();
+  //     return list;
+  //   }
 
-    return null;
-  };
+  //   return null;
+  // };
 
-  sortHistory = list => {
-    // console.log('sortHistory', this);
-    const newList = [];
-    let size = list.length;
-    for (let i = 0; i < list.length; i += 1) {
-      newList.push(list[size - 1]);
-      size -= 1;
-    }
-    return newList;
-  };
+  // sortHistory = list => {
+  //   // console.log('sortHistory', this);
+  //   const newList = [];
+  //   let size = list.length;
+  //   for (let i = 0; i < list.length; i += 1) {
+  //     newList.push(list[size - 1]);
+  //     size -= 1;
+  //   }
+  //   return newList;
+  // };
 
   render() {
     const { state } = this.props;
-    const {
-      history,
-      stepNumber,
-      xIsNext,
-      isDecrease,
-      fIncrease,
-      moves,
-      arrWin
-    } = state;
+    const { history, stepNumber, xIsNext, arrWin } = state;
     const current = history[stepNumber];
     const status = `Next player: ${xIsNext ? 'X' : 'O'}`;
-    let movess = history.map((step, move) => {
+    const movess = history.map((step, move) => {
       const desc = move ? `Go to move #${move}` : 'Go to game start';
       const keyIdx = move;
       if (move === stepNumber)
         return (
-          // <option style={{background: "#28A745"}} key={move} onClick={() => this.jumpTo(move)}><button>{desc}</button></option>
           <li key={keyIdx}>
             <button
               type="button"
               style={{ background: '#28A745' }}
-              onClick={() => this.jumpTo(move)}
+              // onClick={() => this.jumpTo(move)}
             >
               {desc}
             </button>
@@ -405,19 +407,17 @@ class App extends React.Component {
         );
 
       return (
-        // <option key={move} onClick={() => this.jumpTo(move)}>{desc}</option>
         <li key={keyIdx}>
-          <button type="button" onClick={() => this.jumpTo(move)}>
+          <button
+            type="button"
+            // onClick={() => this.jumpTo(move)}
+          >
             {desc}
           </button>
         </li>
       );
     });
-    if (isDecrease) {
-      movess = this.sortHistory(movess);
-    }
-
-    // console.log(moves[moves.length].key)
+    
     return (
       <div className="game">
         <div className="game-board status2">
@@ -448,7 +448,7 @@ class App extends React.Component {
                 </thead>
                 <tbody>
                   <tr>
-                    <th scope="row">{fIncrease ? moves : movess}</th>
+                    <th scope="row">{movess}</th>
                   </tr>
                 </tbody>
               </table>
@@ -460,17 +460,19 @@ class App extends React.Component {
               <button
                 type="button"
                 className="btn btn-success"
-                onClick={() => this.fIncrease(moves)}
+                onClick={() =>
+                  this.jumpTo(Math.floor(Math.random() * (history.length - 1)))
+                }
               >
-                Increase
+                Undo
               </button>
               &emsp;
               <button
                 type="button"
                 className="btn btn-success"
-                onClick={() => this.fDecrease(moves)}
+                onClick={() => this.jumpTo(history.length - 1)}
               >
-                Decrease
+                REDO
               </button>
             </div>
           </div>
