@@ -4,22 +4,20 @@ import '../css/App.css';
 import Board from './Board';
 
 class App extends React.Component {
-
-   componentDidUpdate = () => {
-    const {state}=this.props
-    const {isAuto,check} =  state
-    console.log('isauto', isAuto)
-    if(check){
+  componentDidUpdate = () => {
+    const { state } = this.props;
+    const { isAuto, check } = state;
+    console.log('isauto', isAuto);
+    if (check) {
       return null;
     }
-    if (isAuto === true) {      
+    if (isAuto === true) {
       setTimeout(() => {
         this.handleClick(Math.floor(Math.random() * 399));
-      }, 1000); 
-      
+      }, 1000);
     }
     return null;
-  }
+  };
   
   handleClick = i => {
     const { state } = this.props;
@@ -41,8 +39,8 @@ class App extends React.Component {
     }
 
     if (newSquaresArr[i] === null) {
-      const {isAuto}=state
-      const {setAuto}= this.props
+      const { isAuto } = state;
+      const { setAuto } = this.props;
       setAuto(isAuto);
       const length = 20;
       const arrTem = [];
@@ -310,7 +308,7 @@ class App extends React.Component {
         default:
           break;
       }
-    }   
+    }
     return null;
   };
 
