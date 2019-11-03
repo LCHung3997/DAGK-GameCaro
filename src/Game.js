@@ -8,11 +8,13 @@ import {
 } from 'react-router-dom';
 import { Icon } from 'antd';
 import { connect } from 'react-redux';
-import MapApp from './containers/MapApp';
+import HomePage from './component/HomePage';
 import MapRegister from './containers/MapRegister';
 import './css/Game.css';
 import MapLogin from './containers/MapLogin';
 import { getProfileFetch, restartGame } from './actions/indexAction';
+import MappProfile from './containers/MappProfile';
+import MapPass from './containers/MapPass';
 
 class Game extends React.PureComponent {
   componentDidMount = () => {
@@ -30,17 +32,16 @@ class Game extends React.PureComponent {
     const tokenn = localStorage.token;
     const { state } = this.props;
     const { currentUser } = state;
-    if (tokenn != null || currentUser.Username != null) {
-      // console.log('----------------an', currentUser)
-      // const deToken = jwt.decode(tokenn);
-      // const { currentUser } = state;
+    
+    if (tokenn != null) {
+      console.log('user',state)
       return (
         <Router>
           <div className="sidenav">
             <ul>
               {currentUser.Username ? (
                 <li className="user">
-                  <Link to>
+                  <Link to="/profile">
                     <Icon className="icon" type="user" /> {currentUser.Username}
                   </Link>
                 </li>
@@ -53,11 +54,9 @@ class Game extends React.PureComponent {
               </li>
               <br />
               <li>
-                <Link  to="/login">
+                <Link to="/login">
                   <text className="btnn" onClick={this.handleClick}>
-                  <Icon className="icon" type="logout"/> 
-                  {' '}  
-                    Logout
+                    <Icon className="icon" type="logout" /> Logout
                   </text>
                 </Link>
               </li>
@@ -67,6 +66,13 @@ class Game extends React.PureComponent {
           <div className="main">
             <div className="div70">
               <Switch>
+                <Route path="/profile">
+                  <MappProfile />
+                </Route>
+                <Route path="/editpassword">
+                  <MapPass />
+                </Route>
+
                 <Route path="/login">
                   <Redirect to="/home" />
                 </Route>
@@ -75,7 +81,7 @@ class Game extends React.PureComponent {
                 </Route>
                 {tokenn ? (
                   <Route path="/home">
-                    <MapApp />
+                    <HomePage />
                   </Route>
                 ) : (
                   <Redirect to="/login" />

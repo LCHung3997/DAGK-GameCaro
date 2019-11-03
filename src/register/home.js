@@ -51,6 +51,9 @@ class Register extends React.Component {
   render() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
+    const {state} = this.props;
+    const {pending} = state
+    
     return (
       <div className="shadow-lg m-5 p-5 register">
         <h3 className="h3">REGISTER</h3>
@@ -131,6 +134,24 @@ class Register extends React.Component {
               />
             )}
           </Form.Item>
+          {pending ? (
+              <div
+                style={{                  
+                  background: 'white',
+                  
+                  width: '100%',
+                  height: '100%',
+                  opacity: '60%',
+                  zIndex:1
+                }}
+              >
+                <Icon type="loading" style={{ fontSize: 24 }} />
+                
+              </div>
+            ) : (
+              ''
+            )}
+
 
           <Form.Item>
             <Button

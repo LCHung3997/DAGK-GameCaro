@@ -13,7 +13,11 @@ import {
   LOGOUT_ACOUNT,
   CONFIRM_REGISTER,
   REGISTER_ERR,
-  LOGIN_FACEBOOK
+  LOGIN_FACEBOOK,
+  RELOAD_DB,
+  PENDING_LOGIN,
+  EDIT_PASS,
+  SET_AUTO
 } from '../constants/actions';
 
 export const tickSquare = (index, newSquaresArr, history, xIsNext) => ({
@@ -21,8 +25,13 @@ export const tickSquare = (index, newSquaresArr, history, xIsNext) => ({
   index,
   newSquaresArr,
   history,
-  xIsNext
+  xIsNext,
 });
+
+export const setAuto = (isAuto)=> ({
+  type: SET_AUTO,
+  isAuto
+})
 
 export const checkWin = arrTem => ({
   type: CHECK_WIN,
@@ -39,7 +48,7 @@ export const goToMove = (step, arrWinTemp) => ({
   arrWinTemp
 });
 
-export const loginByFacebook = (facebook) => ({
+export const loginByFacebook = facebook => ({
   type: LOGIN_FACEBOOK,
   payload: facebook
 });
@@ -74,9 +83,24 @@ export const logAccount = currentUser => ({
   type: LOGIN_ACOUNT,
   payload: currentUser
 });
+
+export const reloadDB = (ID, gmail, Username, gender, avatar, Password) => ({
+  type: RELOAD_DB,
+  payload: { ID, gmail, Username, gender, avatar, Password }
+});
+
+export const editPass = Password => ({
+  type: EDIT_PASS,
+  Password
+});
+
 export const registerErr = error => ({
   type: REGISTER_ERR,
   payload: error
+});
+
+export const pendingLogin = () => ({
+  type: PENDING_LOGIN
 });
 
 export const fecthAccount = (Username, Password, gmail, gender, avatar) => {
@@ -90,9 +114,29 @@ export const fecthAccount = (Username, Password, gmail, gender, avatar) => {
         avatar
       })
       .then(response => response.data)
-      .then(data =>
-        dispatch(registerErr(data)))
-      .catch(function(error) {
+      .then(data => dispatch(registerErr(data)))
+      .catch( (error)=> {
+        console.log(error);
+      });
+  };
+};
+
+export const updateInfor = (ID, gmail, Username, gender, avatar, Password) => {
+  return dispatch => {
+    return axios
+      .post('http://localhost:5000/editprofile', {
+        ID,
+        Username,
+        gender,
+        avatar
+      })
+      .then(response => response.data)
+      .then(data => {
+        if (data) {
+          dispatch(reloadDB(ID, gmail, Username, gender, avatar, Password));
+        }
+      })
+      .catch(error => {
         console.log(error);
       });
   };
@@ -100,6 +144,7 @@ export const fecthAccount = (Username, Password, gmail, gender, avatar) => {
 
 export const loginAccount = (gmail, Password) => {
   return dispatch => {
+    dispatch(pendingLogin());
     return axios
       .post('https://lchung-passport-jwt.herokuapp.com/user/login', {
         gmail,
@@ -139,10 +184,31 @@ export const getProfileFetch = () => {
           if (data.message) {
             localStorage.removeItem('token');
           } else {
+            console.log('daya: ', data)
             dispatch(logAccount(data));
           }
         });
     }
     return null;
+  };
+};
+
+export const updatePass = (ID, gmail, Username, gender, avatar, Password) => {
+  console.log('pass', Password);
+  return dispatch => {
+    return axios
+      .post('http://localhost:5000/editpass', {
+        ID,
+        Password
+      })
+      .then(response => response.data)
+      .then(data => {
+        if (data) {
+          dispatch(reloadDB(ID, gmail, Username, gender, avatar, Password));
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 };

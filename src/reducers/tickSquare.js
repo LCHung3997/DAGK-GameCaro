@@ -11,8 +11,13 @@ const tickSquare = (state = createInitialState(), action) => {
           }
         ]),
         stepNumber: action.history.length,
-        xIsNext: !action.xIsNext
+        xIsNext: !action.xIsNext,
       };
+      case 'SET_AUTO':
+        return{
+          ...state,
+          isAuto: !action.isAuto
+        }
     case 'CHECK_WIN':
       return {
         ...state,
@@ -35,7 +40,7 @@ const tickSquare = (state = createInitialState(), action) => {
         check: false,
         isIncrease: true,
         isDecrease: false,
-        error: {},
+        error: {}
       };
     case 'GOTO_MOVE':
       return {
@@ -48,7 +53,8 @@ const tickSquare = (state = createInitialState(), action) => {
     case 'LOGOUT_ACOUNT':
       return {
         ...state,
-        currentUser: {}
+        currentUser: {},
+        pending: false,
       };
     case 'GOTO_MOVE_WIN':
       return {
@@ -80,8 +86,21 @@ const tickSquare = (state = createInitialState(), action) => {
     case 'LOGIN_ACOUNT':
       return {
         ...state,
+        currentUser: action.payload,
+        pending: false,
+      };
+    case 'RELOAD_DB':
+      return {
+        ...state,
         currentUser: action.payload
       };
+
+      case 'EDIT_PASS':
+      return {
+        ...state.currentUser,
+        Password: action.Password
+      };
+
     case 'LOGIN_FACEBOOK':
       return {
         ...state,
@@ -95,6 +114,10 @@ const tickSquare = (state = createInitialState(), action) => {
     case 'CONFIRM_REGISTER':
       return {
         ...state
+      };
+    case 'PENDING_LOGIN':
+      return {
+        ...state, pending: true
       };
 
     default:
