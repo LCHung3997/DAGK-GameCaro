@@ -18,7 +18,8 @@ import {
   PENDING_LOGIN,
   EDIT_PASS,
   SET_AUTO,
-  FALSE_AUTO
+  FALSE_AUTO,
+  PUSH_MESSAGE
 } from '../constants/actions';
 
 export const tickSquare = (index, newSquaresArr, history, xIsNext) => ({
@@ -33,7 +34,12 @@ export const setFalseIsAuto = () => ({
   type: FALSE_AUTO
 })
 
-export const setAuto = (isAuto)=> ({
+export const pushMessage = (message) => ({
+  type: PUSH_MESSAGE,
+  message
+})
+
+export const setAuto = isAuto => ({
   type: SET_AUTO,
   isAuto
 })
@@ -111,7 +117,7 @@ export const pendingLogin = () => ({
 export const fecthAccount = (Username, Password, gmail, gender, avatar) => {
   return dispatch => {
     return axios
-      .post('https://lchung-passport-jwt.herokuapp.com/user/register', {
+      .post('http://localhost:5000/user/register', {
         Username,
         Password,
         gmail,

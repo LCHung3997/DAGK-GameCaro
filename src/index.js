@@ -10,6 +10,7 @@ import rootReducer from './reducers/indexReducers'
 import './css/index.css';
 import Game from './Game'
 import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const loggerMiddleware = createLogger()
 

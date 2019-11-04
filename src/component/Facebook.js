@@ -1,63 +1,40 @@
-import React, { Component } from "react";
-import FacebookLogin from "react-facebook-login";
+import React, { Component } from 'react';
+import FacebookLogin from 'react-facebook-login';
 import { connect } from 'react-redux';
-import {loginByFacebook} from '../actions/indexAction'
+import { fecthAccount,loginAccount } from '../actions/indexAction';
 
- class Facebook extends Component {
-  // state = {
-  //   isLoggedIn: false,
-  //   userID: "",
-  //   name: "",
-  //   email: "",
-  //   picture: ""
-  // };
-
+class Facebook extends Component {
   responseFacebook = response => {
-     console.log("fb",response);
-    const { LoginByFacebook} = this.props;
-    const State = {
-      isLoggedIn: true,
-      userID: response.userID,
-      Username: response.name,
-      gmail: response.email,
-      avatar: response.picture.data.url
-    };
-    LoginByFacebook(State)
-
-
+    console.log(
+      'fb',
+      response.email
+    );
+    const { registerAcc, logAccount } = this.props;
+    Promise.resolve(
+      registerAcc(
+        response.name,
+        response.userID,
+        response.email,
+        response.name,
+        response.name
+      )
+    ).then(()=> {
+      logAccount(response.email,response.userID)
+    });
   };
 
-  componentClicked = () => console.log("clicked");
+  componentClicked = () => console.log('clicked');
 
   render() {
-    // let fbContent;
-
-    // if (this.state.isLoggedIn) {
-    //   console.log('++++++++++')
-    //   fbContent = (
-    //     <div
-    //       style={{
-    //         width: "400px",
-    //         margin: "auto",
-    //         background: "#f4f4f4",
-    //         padding: "20px"
-    //       }}
-    //     >
-    //       <img src={this.state.picture} alt={this.state.name} />
-    //       <h2>Welcome {this.state.name}</h2>
-    //       Email: {this.state.email}
-    //     </div>
-    //   );
-    // } else {
-     const fbContent = (
-        <FacebookLogin
-          appId="189486938370592"
-          autoLoad
-          fields="Username,gmail,avatar"
-          onClick={this.componentClicked}
-          callback={this.responseFacebook}
-        />
-      );
+    const fbContent = (
+      <FacebookLogin
+        appId="2752746501423488"
+        autoLoad={false}
+        fields="name,email,picture"
+        onClick={this.componentClicked}
+        callback={this.responseFacebook}
+      />
+    );
     // }
 
     return <div>{fbContent}</div>;
@@ -69,8 +46,14 @@ const mapRouterStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  LoginByFacebook: () => dispatch(loginByFacebook()),
-  
+  registerAcc: (Username, Password, gmail, gender, avatar) =>
+    dispatch(fecthAccount(Username, Password, gmail, gender, avatar)),
+  logAccount: (Username,Password) => dispatch(loginAccount(Username,Password)),
+
+
 });
 
-export default connect(mapRouterStateToProps,mapDispatchToProps)(Facebook)
+export default connect(
+  mapRouterStateToProps,
+  mapDispatchToProps
+)(Facebook);

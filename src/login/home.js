@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import 'antd/dist/antd.css';
 import '../css/login.css';
-// import Facebook from "../component/Facebook";
+import Facebook from "../component/Facebook";
 
 class Login extends React.Component {
   handleSubmit = e => {
@@ -103,11 +103,11 @@ class Login extends React.Component {
             </Button>
           </Form.Item>
         </Form>
-        {/* <div className="App">
+        <div className="App">
         <Facebook />
         <br />
         <br />
-      </div> */}
+      </div>
       </div>
     );
   }

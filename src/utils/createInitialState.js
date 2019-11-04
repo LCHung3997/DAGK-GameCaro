@@ -19,6 +19,8 @@ const createInitialState = () => ({
     error:{},
     pending: false,
     isAuto: false,
+    messages: [],
+    index: -1,
 
 })
 

@@ -17,3 +17,4 @@ export const PENDING_LOGIN = 'PENDING_LOGIN';
 export const EDIT_PASS = 'EDIT_PASS';
 export const SET_AUTO = 'SET_AUTO';
 export const FALSE_AUTO = 'FALSE_AUTO';
+export const PUSH_MESSAGE = 'PUSH_MESSAGE'

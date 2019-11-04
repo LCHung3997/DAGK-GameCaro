@@ -5,19 +5,20 @@ const tickSquare = (state = createInitialState(), action) => {
     case 'TICK_SQUARE':
       return {
         ...state,
+        index: action.index,
         history: action.history.concat([
           {
             squares: action.newSquaresArr
           }
         ]),
         stepNumber: action.history.length,
-        xIsNext: !action.xIsNext,
+        xIsNext: !action.xIsNext
       };
-      case 'SET_AUTO':
-        return{
-          ...state,
-          isAuto: !action.isAuto
-        }
+    case 'SET_AUTO':
+      return {
+        ...state,
+        isAuto: !action.isAuto
+      };
     case 'CHECK_WIN':
       return {
         ...state,
@@ -26,6 +27,12 @@ const tickSquare = (state = createInitialState(), action) => {
         arrWin: action.arrTem,
         arrWinTemp: action.arrTem
       };
+    case 'PUSH_MESSAGE':
+      return {
+        ...state,
+        messages: action.message
+      };
+
     case 'RESTART_GAME':
       return {
         ...state,
@@ -40,7 +47,8 @@ const tickSquare = (state = createInitialState(), action) => {
         check: false,
         isIncrease: true,
         isDecrease: false,
-        error: {}
+        error: {},
+        isAuto: false
       };
     case 'GOTO_MOVE':
       return {
@@ -54,13 +62,13 @@ const tickSquare = (state = createInitialState(), action) => {
       return {
         ...state,
         currentUser: {},
-        pending: false,
+        pending: false
       };
     case 'FALSE_AUTO':
       return {
         ...state,
-        isAuto: true,
-      }
+        isAuto: true
+      };
     case 'GOTO_MOVE_WIN':
       return {
         ...state,
@@ -92,7 +100,7 @@ const tickSquare = (state = createInitialState(), action) => {
       return {
         ...state,
         currentUser: action.payload,
-        pending: false,
+        pending: false
       };
     case 'RELOAD_DB':
       return {
@@ -100,7 +108,7 @@ const tickSquare = (state = createInitialState(), action) => {
         currentUser: action.payload
       };
 
-      case 'EDIT_PASS':
+    case 'EDIT_PASS':
       return {
         ...state.currentUser,
         Password: action.Password
@@ -122,7 +130,8 @@ const tickSquare = (state = createInitialState(), action) => {
       };
     case 'PENDING_LOGIN':
       return {
-        ...state, pending: true
+        ...state,
+        pending: true
       };
 
     default:
