@@ -13,6 +13,7 @@ class App extends React.Component {
       super(props);
       const { state } = this.props;
       const { currentUser } = state;
+
       io.on('BroadcastMessage', message => {
         messagesList.push(
           <div
@@ -42,12 +43,12 @@ class App extends React.Component {
         } else {
           youNext = false;
         }
+        console.log(message);
          this.handleClick(message.index);
       });
       
     }
-    
-
+  
   componentDidUpdate = () => {
     const { state } = this.props;
     const { isAuto, check, withPerson } = state;
@@ -68,14 +69,16 @@ class App extends React.Component {
   addStep = i => {
     const { state } = this.props;
     const { withPerson } = state;
-
-    if (youNext) {
-      if (withPerson) {
+    console.log(state);
+    if (withPerson) {
+      if (youNext) {
+        console.log('------------------------');
         const { currentUser } = state;
         io.emit('AddStep', { index: i, user: currentUser });
-      } else {
-        this.handleClick(i);
-      }
+      } 
+    }
+    else {
+      this.handleClick(i);
     }
   };
 
@@ -88,6 +91,7 @@ class App extends React.Component {
     history = history.slice(0, stepNumber + 1);
     const current = history[history.length - 1];
     const newSquaresArr = current.squares.slice();
+
 
     if (check) {
       Swal.fire({

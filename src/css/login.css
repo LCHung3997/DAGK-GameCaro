@@ -9,6 +9,13 @@
 .login-form-button {
   width: 100%;
 }
+.option{
+  display: grid;
+  text-align: center;
+  width: 60%;
+  height: 300px;
+  margin: auto;
+}
 .Container {
   width: 65%;
   height: 550px;
