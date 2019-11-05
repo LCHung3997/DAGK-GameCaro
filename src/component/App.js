@@ -8,7 +8,7 @@ import Board from './Board';
 const messagesList = [];
 // let usernameNow = '';
 let youNext = true;
-const io = SocketIO.connect('localhost:5000');
+const io = SocketIO.connect('http://localhost:5000');
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -38,37 +38,49 @@ class App extends React.Component {
     });
 
     io.on('NewStep', message => {
-      // usernameNow = message.user.Username;
-      // Đoạn này t có viết sai k
-
-      this.handleClick(message.index);
       if (message.user.Username !== currentUser.Username) {
         youNext = true;
       } else {
         youNext = false;
       }
+      this.handleClick(message.index);
     });
   }
 
-  // componentDidUpdate = () => {
-  //   const { state } = this.props;
-  //   const { isAuto, check } = state;
-  //   if (check) {
-  //     return null;
-  //   }
-  //   if (isAuto === true) {
-  //     setTimeout(() => {
-  //       this.handleClick(Math.floor(Math.random() * 399));
-  //     }, 500);
-  //   }
-  //   return null;
-  // };
+  componentDidUpdate = () => {
+    const { state } = this.props;
+    const { isAuto, check, withPerson } = state;
+    if (withPerson) {
+      return null;
+    }
+    if (check) {
+      return null;
+    }
+    if (isAuto === true) {
+      setTimeout(() => {
+        this.handleClick(Math.floor(Math.random() * 399));
+      }, 500);
+    }
+    return null;
+  };
 
+  addStep = i => {
+    const { state } = this.props;
+    const { withPerson } = state;
 
-  
+    if (youNext) {
+      if (withPerson) {
+        const { currentUser } = state;
+        io.emit('AddStep', { index: i, user: currentUser });
+      } else {
+        this.handleClick(i);
+      }
+    }
+  };
+
   handleClick = i => {
     const { state } = this.props;
-    const { isAuto, currentUser } = state;
+    const { isAuto } = state;
     let { history } = state;
     const { stepNumber, check, xIsNext } = state;
     const { tickSquares, checkWin } = this.props;
@@ -88,280 +100,279 @@ class App extends React.Component {
 
     if (newSquaresArr[i] === null) {
       // console.log('1',currentUser.Username,'2', usernameNow)
-      if (youNext) {
-        io.emit('AddStep', { index: i, user: currentUser });
-        const { setAuto } = this.props;
-        setAuto(isAuto);
-        const length = 20;
-        const arrTem = [];
-        newSquaresArr[i] = xIsNext ? 'X' : 'O';
-        // dispatch action
-        tickSquares(i, newSquaresArr, history, xIsNext);
 
-        switch (newSquaresArr[i]) {
-          case 'O': {
-            // hàng
-            for (let colum = 1; colum < 6; colum += 1) {
-              if (
-                ((newSquaresArr[i - colum] === 'X' &&
-                  newSquaresArr[i - colum + 6] !== 'X') ||
-                  (newSquaresArr[i - colum] !== 'X' &&
-                    newSquaresArr[i - colum + 6] === 'X') ||
-                  (newSquaresArr[i - colum] !== 'X' &&
-                    newSquaresArr[i - colum + 6] !== 'X')) &&
-                newSquaresArr[i - colum + 1] === 'O' &&
-                newSquaresArr[i - colum + 2] === 'O' &&
-                newSquaresArr[i - colum + 3] === 'O' &&
-                newSquaresArr[i - colum + 4] === 'O' &&
-                newSquaresArr[i - colum + 5] === 'O'
-              ) {
-                arrTem.push(i - colum + 1);
-                arrTem.push(i - colum + 2);
-                arrTem.push(i - colum + 3);
-                arrTem.push(i - colum + 4);
-                arrTem.push(i - colum + 5);
+      const { setAuto } = this.props;
+      setAuto(isAuto);
+      const length = 20;
+      const arrTem = [];
+      newSquaresArr[i] = xIsNext ? 'X' : 'O';
+      // dispatch action
+      tickSquares(i, newSquaresArr, history, xIsNext);
 
-                checkWin(arrTem);
+      switch (newSquaresArr[i]) {
+        case 'O': {
+          // hàng
+          for (let colum = 1; colum < 6; colum += 1) {
+            if (
+              ((newSquaresArr[i - colum] === 'X' &&
+                newSquaresArr[i - colum + 6] !== 'X') ||
+                (newSquaresArr[i - colum] !== 'X' &&
+                  newSquaresArr[i - colum + 6] === 'X') ||
+                (newSquaresArr[i - colum] !== 'X' &&
+                  newSquaresArr[i - colum + 6] !== 'X')) &&
+              newSquaresArr[i - colum + 1] === 'O' &&
+              newSquaresArr[i - colum + 2] === 'O' &&
+              newSquaresArr[i - colum + 3] === 'O' &&
+              newSquaresArr[i - colum + 4] === 'O' &&
+              newSquaresArr[i - colum + 5] === 'O'
+            ) {
+              arrTem.push(i - colum + 1);
+              arrTem.push(i - colum + 2);
+              arrTem.push(i - colum + 3);
+              arrTem.push(i - colum + 4);
+              arrTem.push(i - colum + 5);
 
-                Swal.fire({
-                  imageUrl:
-                    'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
-                  title: 'HAPPY',
-                  text: '0 is winner :)'
-                });
-                return null;
-              }
+              checkWin(arrTem);
+
+              Swal.fire({
+                imageUrl:
+                  'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
+                title: 'HAPPY',
+                text: '0 is winner :)'
+              });
+              return null;
             }
-            // dọc
-            for (let row = 1; row < 6; row += 1) {
-              if (
-                ((newSquaresArr[i - row * length] === 'X' &&
-                  newSquaresArr[i + (-row + 6) * length] !== 'X') ||
-                  (newSquaresArr[i - row * length] !== 'X' &&
-                    newSquaresArr[i + (-row + 6) * length] === 'X') ||
-                  (newSquaresArr[i - row * length] !== 'X' &&
-                    newSquaresArr[i + (-row + 6) * length] !== 'X')) &&
-                newSquaresArr[i + (-row + 1) * 20] === 'O' &&
-                newSquaresArr[i + (-row + 2) * 20] === 'O' &&
-                newSquaresArr[i + (-row + 3) * 20] === 'O' &&
-                newSquaresArr[i + (-row + 4) * 20] === 'O' &&
-                newSquaresArr[i + (-row + 5) * 20] === 'O'
-              ) {
-                arrTem.push(i + (-row + 1) * 20);
-                arrTem.push(i + (-row + 2) * 20);
-                arrTem.push(i + (-row + 3) * 20);
-                arrTem.push(i + (-row + 4) * 20);
-                arrTem.push(i + (-row + 5) * 20);
-
-                checkWin(arrTem);
-
-                Swal.fire({
-                  imageUrl:
-                    'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
-                  title: 'HAPPY',
-                  text: '0 is winner :)'
-                });
-                return null;
-              }
-            }
-            // chéo phải
-            for (let row = 1; row < 6; row += 1) {
-              if (
-                ((newSquaresArr[i - row * (length + 1)] === 'X' &&
-                  newSquaresArr[i + (-row + 6) * (length + 1)] !== 'X') ||
-                  (newSquaresArr[i - row * (length + 1)] !== 'X' &&
-                    newSquaresArr[i + (-row + 6) * (length + 1)] === 'X') ||
-                  (newSquaresArr[i - row * (length + 1)] !== 'X' &&
-                    newSquaresArr[i + (-row + 6) * (length + 1)] !== 'X')) &&
-                newSquaresArr[i + (-row + 1) * (length + 1)] === 'O' &&
-                newSquaresArr[i + (-row + 2) * (length + 1)] === 'O' &&
-                newSquaresArr[i + (-row + 3) * (length + 1)] === 'O' &&
-                newSquaresArr[i + (-row + 4) * (length + 1)] === 'O' &&
-                newSquaresArr[i + (-row + 5) * (length + 1)] === 'O'
-              ) {
-                arrTem.push(i + (-row + 1) * (length + 1));
-                arrTem.push(i + (-row + 2) * (length + 1));
-                arrTem.push(i + (-row + 3) * (length + 1));
-                arrTem.push(i + (-row + 4) * (length + 1));
-                arrTem.push(i + (-row + 5) * (length + 1));
-                checkWin(arrTem);
-
-                Swal.fire({
-                  imageUrl:
-                    'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
-                  title: 'HAPPY',
-                  text: '0 is winner :)'
-                });
-                return null;
-              }
-            }
-
-            // chéo trái
-            for (let row = 1; row < 6; row += 1) {
-              if (
-                ((newSquaresArr[i - row * (length - 1)] === 'X' &&
-                  newSquaresArr[i + (-row + 6) * (length - 1)] !== 'X') ||
-                  (newSquaresArr[i - row * (length - 1)] !== 'X' &&
-                    newSquaresArr[i + (-row + 6) * (length - 1)] === 'X') ||
-                  (newSquaresArr[i - row * (length - 1)] !== 'X' &&
-                    newSquaresArr[i + (-row + 6) * (length - 1)] !== 'X')) &&
-                newSquaresArr[i + (-row + 1) * (length - 1)] === 'O' &&
-                newSquaresArr[i + (-row + 2) * (length - 1)] === 'O' &&
-                newSquaresArr[i + (-row + 3) * (length - 1)] === 'O' &&
-                newSquaresArr[i + (-row + 4) * (length - 1)] === 'O' &&
-                newSquaresArr[i + (-row + 5) * (length - 1)] === 'O'
-              ) {
-                arrTem.push(i + (-row + 1) * (length - 1));
-                arrTem.push(i + (-row + 2) * (length - 1));
-                arrTem.push(i + (-row + 3) * (length - 1));
-                arrTem.push(i + (-row + 4) * (length - 1));
-                arrTem.push(i + (-row + 5) * (length - 1));
-                checkWin(arrTem);
-
-                Swal.fire({
-                  imageUrl:
-                    'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
-                  title: 'HAPPY',
-                  text: '0 is winner :)'
-                });
-                return null;
-              }
-            }
-            break;
           }
-          case 'X': {
-            // hàng
-            for (let colum = 1; colum < 6; colum += 1) {
-              if (
-                ((newSquaresArr[i - colum] === 'O' &&
-                  newSquaresArr[i - colum + 6] !== 'O') ||
-                  (newSquaresArr[i - colum] !== 'O' &&
-                    newSquaresArr[i - colum + 6] === 'O') ||
-                  (newSquaresArr[i - colum] !== 'O' &&
-                    newSquaresArr[i - colum + 6] !== 'O')) &&
-                newSquaresArr[i - colum + 1] === 'X' &&
-                newSquaresArr[i - colum + 2] === 'X' &&
-                newSquaresArr[i - colum + 3] === 'X' &&
-                newSquaresArr[i - colum + 4] === 'X' &&
-                newSquaresArr[i - colum + 5] === 'X'
-              ) {
-                arrTem.push(i - colum + 1);
-                arrTem.push(i - colum + 2);
-                arrTem.push(i - colum + 3);
-                arrTem.push(i - colum + 4);
-                arrTem.push(i - colum + 5);
-                checkWin(arrTem);
+          // dọc
+          for (let row = 1; row < 6; row += 1) {
+            if (
+              ((newSquaresArr[i - row * length] === 'X' &&
+                newSquaresArr[i + (-row + 6) * length] !== 'X') ||
+                (newSquaresArr[i - row * length] !== 'X' &&
+                  newSquaresArr[i + (-row + 6) * length] === 'X') ||
+                (newSquaresArr[i - row * length] !== 'X' &&
+                  newSquaresArr[i + (-row + 6) * length] !== 'X')) &&
+              newSquaresArr[i + (-row + 1) * 20] === 'O' &&
+              newSquaresArr[i + (-row + 2) * 20] === 'O' &&
+              newSquaresArr[i + (-row + 3) * 20] === 'O' &&
+              newSquaresArr[i + (-row + 4) * 20] === 'O' &&
+              newSquaresArr[i + (-row + 5) * 20] === 'O'
+            ) {
+              arrTem.push(i + (-row + 1) * 20);
+              arrTem.push(i + (-row + 2) * 20);
+              arrTem.push(i + (-row + 3) * 20);
+              arrTem.push(i + (-row + 4) * 20);
+              arrTem.push(i + (-row + 5) * 20);
 
-                Swal.fire({
-                  imageUrl:
-                    'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
-                  title: 'HAPPY',
-                  text: 'X is winner :)'
-                });
-                return null;
-              }
+              checkWin(arrTem);
+
+              Swal.fire({
+                imageUrl:
+                  'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
+                title: 'HAPPY',
+                text: '0 is winner :)'
+              });
+              return null;
             }
-
-            // dọc
-            for (let row = 1; row < 6; row += 1) {
-              if (
-                ((newSquaresArr[i - row * length] === 'O' &&
-                  newSquaresArr[i + (-row + 6) * length] !== 'O') ||
-                  (newSquaresArr[i - row * length] !== 'O' &&
-                    newSquaresArr[i + (-row + 6) * length] === 'O') ||
-                  (newSquaresArr[i - row * length] !== 'O' &&
-                    newSquaresArr[i + (-row + 6) * length] !== 'O')) &&
-                newSquaresArr[i + (-row + 1) * 20] === 'X' &&
-                newSquaresArr[i + (-row + 2) * 20] === 'X' &&
-                newSquaresArr[i + (-row + 3) * 20] === 'X' &&
-                newSquaresArr[i + (-row + 4) * 20] === 'X' &&
-                newSquaresArr[i + (-row + 5) * 20] === 'X'
-              ) {
-                arrTem.push(i + (-row + 1) * 20);
-                arrTem.push(i + (-row + 2) * 20);
-                arrTem.push(i + (-row + 3) * 20);
-                arrTem.push(i + (-row + 4) * 20);
-                arrTem.push(i + (-row + 5) * 20);
-                checkWin(arrTem);
-
-                Swal.fire({
-                  imageUrl:
-                    'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
-                  title: 'HAPPY',
-                  text: 'X is winner :)'
-                });
-              }
-            }
-            // chéo phải
-            for (let row = 1; row < 6; row += 1) {
-              if (
-                ((newSquaresArr[i - row * (length + 1)] === 'O' &&
-                  newSquaresArr[i + (-row + 6) * (length + 1)] !== 'O') ||
-                  (newSquaresArr[i - row * (length + 1)] !== 'O' &&
-                    newSquaresArr[i + (-row + 6) * (length + 1)] === 'O') ||
-                  (newSquaresArr[i - row * (length + 1)] !== 'O' &&
-                    newSquaresArr[i + (-row + 6) * (length + 1)] !== 'O')) &&
-                newSquaresArr[i + (-row + 1) * (length + 1)] === 'X' &&
-                newSquaresArr[i + (-row + 2) * (length + 1)] === 'X' &&
-                newSquaresArr[i + (-row + 3) * (length + 1)] === 'X' &&
-                newSquaresArr[i + (-row + 4) * (length + 1)] === 'X' &&
-                newSquaresArr[i + (-row + 5) * (length + 1)] === 'X'
-              ) {
-                arrTem.push(i + (-row + 1) * (length + 1));
-                arrTem.push(i + (-row + 2) * (length + 1));
-                arrTem.push(i + (-row + 3) * (length + 1));
-                arrTem.push(i + (-row + 4) * (length + 1));
-                arrTem.push(i + (-row + 5) * (length + 1));
-                checkWin(arrTem);
-
-                Swal.fire({
-                  imageUrl:
-                    'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
-                  title: 'HAPPY',
-                  text: 'X is winner :)'
-                });
-              }
-            }
-
-            // chéo trái
-            for (let row = 1; row < 6; row += 1) {
-              if (
-                ((newSquaresArr[i - row * (length - 1)] === 'O' &&
-                  newSquaresArr[i + (-row + 6) * (length - 1)] !== 'O') ||
-                  (newSquaresArr[i - row * (length - 1)] !== 'O' &&
-                    newSquaresArr[i + (-row + 6) * (length - 1)] === 'O') ||
-                  (newSquaresArr[i - row * (length - 1)] !== 'O' &&
-                    newSquaresArr[i + (-row + 6) * (length - 1)] !== 'O')) &&
-                newSquaresArr[i + (-row + 1) * (length - 1)] === 'X' &&
-                newSquaresArr[i + (-row + 2) * (length - 1)] === 'X' &&
-                newSquaresArr[i + (-row + 3) * (length - 1)] === 'X' &&
-                newSquaresArr[i + (-row + 4) * (length - 1)] === 'X' &&
-                newSquaresArr[i + (-row + 5) * (length - 1)] === 'X'
-              ) {
-                arrTem.push(i + (-row + 1) * (length - 1));
-                arrTem.push(i + (-row + 2) * (length - 1));
-                arrTem.push(i + (-row + 3) * (length - 1));
-                arrTem.push(i + (-row + 4) * (length - 1));
-                arrTem.push(i + (-row + 5) * (length - 1));
-                checkWin(arrTem);
-
-                Swal.fire({
-                  imageUrl:
-                    'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
-                  title: 'HAPPY',
-                  text: 'X is winner :)'
-                });
-              }
-            }
-            break;
           }
-          default:
-            break;
+          // chéo phải
+          for (let row = 1; row < 6; row += 1) {
+            if (
+              ((newSquaresArr[i - row * (length + 1)] === 'X' &&
+                newSquaresArr[i + (-row + 6) * (length + 1)] !== 'X') ||
+                (newSquaresArr[i - row * (length + 1)] !== 'X' &&
+                  newSquaresArr[i + (-row + 6) * (length + 1)] === 'X') ||
+                (newSquaresArr[i - row * (length + 1)] !== 'X' &&
+                  newSquaresArr[i + (-row + 6) * (length + 1)] !== 'X')) &&
+              newSquaresArr[i + (-row + 1) * (length + 1)] === 'O' &&
+              newSquaresArr[i + (-row + 2) * (length + 1)] === 'O' &&
+              newSquaresArr[i + (-row + 3) * (length + 1)] === 'O' &&
+              newSquaresArr[i + (-row + 4) * (length + 1)] === 'O' &&
+              newSquaresArr[i + (-row + 5) * (length + 1)] === 'O'
+            ) {
+              arrTem.push(i + (-row + 1) * (length + 1));
+              arrTem.push(i + (-row + 2) * (length + 1));
+              arrTem.push(i + (-row + 3) * (length + 1));
+              arrTem.push(i + (-row + 4) * (length + 1));
+              arrTem.push(i + (-row + 5) * (length + 1));
+              checkWin(arrTem);
+
+              Swal.fire({
+                imageUrl:
+                  'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
+                title: 'HAPPY',
+                text: '0 is winner :)'
+              });
+              return null;
+            }
+          }
+
+          // chéo trái
+          for (let row = 1; row < 6; row += 1) {
+            if (
+              ((newSquaresArr[i - row * (length - 1)] === 'X' &&
+                newSquaresArr[i + (-row + 6) * (length - 1)] !== 'X') ||
+                (newSquaresArr[i - row * (length - 1)] !== 'X' &&
+                  newSquaresArr[i + (-row + 6) * (length - 1)] === 'X') ||
+                (newSquaresArr[i - row * (length - 1)] !== 'X' &&
+                  newSquaresArr[i + (-row + 6) * (length - 1)] !== 'X')) &&
+              newSquaresArr[i + (-row + 1) * (length - 1)] === 'O' &&
+              newSquaresArr[i + (-row + 2) * (length - 1)] === 'O' &&
+              newSquaresArr[i + (-row + 3) * (length - 1)] === 'O' &&
+              newSquaresArr[i + (-row + 4) * (length - 1)] === 'O' &&
+              newSquaresArr[i + (-row + 5) * (length - 1)] === 'O'
+            ) {
+              arrTem.push(i + (-row + 1) * (length - 1));
+              arrTem.push(i + (-row + 2) * (length - 1));
+              arrTem.push(i + (-row + 3) * (length - 1));
+              arrTem.push(i + (-row + 4) * (length - 1));
+              arrTem.push(i + (-row + 5) * (length - 1));
+              checkWin(arrTem);
+
+              Swal.fire({
+                imageUrl:
+                  'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
+                title: 'HAPPY',
+                text: '0 is winner :)'
+              });
+              return null;
+            }
+          }
+          break;
         }
+        case 'X': {
+          // hàng
+          for (let colum = 1; colum < 6; colum += 1) {
+            if (
+              ((newSquaresArr[i - colum] === 'O' &&
+                newSquaresArr[i - colum + 6] !== 'O') ||
+                (newSquaresArr[i - colum] !== 'O' &&
+                  newSquaresArr[i - colum + 6] === 'O') ||
+                (newSquaresArr[i - colum] !== 'O' &&
+                  newSquaresArr[i - colum + 6] !== 'O')) &&
+              newSquaresArr[i - colum + 1] === 'X' &&
+              newSquaresArr[i - colum + 2] === 'X' &&
+              newSquaresArr[i - colum + 3] === 'X' &&
+              newSquaresArr[i - colum + 4] === 'X' &&
+              newSquaresArr[i - colum + 5] === 'X'
+            ) {
+              arrTem.push(i - colum + 1);
+              arrTem.push(i - colum + 2);
+              arrTem.push(i - colum + 3);
+              arrTem.push(i - colum + 4);
+              arrTem.push(i - colum + 5);
+              checkWin(arrTem);
+
+              Swal.fire({
+                imageUrl:
+                  'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
+                title: 'HAPPY',
+                text: 'X is winner :)'
+              });
+              return null;
+            }
+          }
+
+          // dọc
+          for (let row = 1; row < 6; row += 1) {
+            if (
+              ((newSquaresArr[i - row * length] === 'O' &&
+                newSquaresArr[i + (-row + 6) * length] !== 'O') ||
+                (newSquaresArr[i - row * length] !== 'O' &&
+                  newSquaresArr[i + (-row + 6) * length] === 'O') ||
+                (newSquaresArr[i - row * length] !== 'O' &&
+                  newSquaresArr[i + (-row + 6) * length] !== 'O')) &&
+              newSquaresArr[i + (-row + 1) * 20] === 'X' &&
+              newSquaresArr[i + (-row + 2) * 20] === 'X' &&
+              newSquaresArr[i + (-row + 3) * 20] === 'X' &&
+              newSquaresArr[i + (-row + 4) * 20] === 'X' &&
+              newSquaresArr[i + (-row + 5) * 20] === 'X'
+            ) {
+              arrTem.push(i + (-row + 1) * 20);
+              arrTem.push(i + (-row + 2) * 20);
+              arrTem.push(i + (-row + 3) * 20);
+              arrTem.push(i + (-row + 4) * 20);
+              arrTem.push(i + (-row + 5) * 20);
+              checkWin(arrTem);
+
+              Swal.fire({
+                imageUrl:
+                  'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
+                title: 'HAPPY',
+                text: 'X is winner :)'
+              });
+            }
+          }
+          // chéo phải
+          for (let row = 1; row < 6; row += 1) {
+            if (
+              ((newSquaresArr[i - row * (length + 1)] === 'O' &&
+                newSquaresArr[i + (-row + 6) * (length + 1)] !== 'O') ||
+                (newSquaresArr[i - row * (length + 1)] !== 'O' &&
+                  newSquaresArr[i + (-row + 6) * (length + 1)] === 'O') ||
+                (newSquaresArr[i - row * (length + 1)] !== 'O' &&
+                  newSquaresArr[i + (-row + 6) * (length + 1)] !== 'O')) &&
+              newSquaresArr[i + (-row + 1) * (length + 1)] === 'X' &&
+              newSquaresArr[i + (-row + 2) * (length + 1)] === 'X' &&
+              newSquaresArr[i + (-row + 3) * (length + 1)] === 'X' &&
+              newSquaresArr[i + (-row + 4) * (length + 1)] === 'X' &&
+              newSquaresArr[i + (-row + 5) * (length + 1)] === 'X'
+            ) {
+              arrTem.push(i + (-row + 1) * (length + 1));
+              arrTem.push(i + (-row + 2) * (length + 1));
+              arrTem.push(i + (-row + 3) * (length + 1));
+              arrTem.push(i + (-row + 4) * (length + 1));
+              arrTem.push(i + (-row + 5) * (length + 1));
+              checkWin(arrTem);
+
+              Swal.fire({
+                imageUrl:
+                  'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
+                title: 'HAPPY',
+                text: 'X is winner :)'
+              });
+            }
+          }
+
+          // chéo trái
+          for (let row = 1; row < 6; row += 1) {
+            if (
+              ((newSquaresArr[i - row * (length - 1)] === 'O' &&
+                newSquaresArr[i + (-row + 6) * (length - 1)] !== 'O') ||
+                (newSquaresArr[i - row * (length - 1)] !== 'O' &&
+                  newSquaresArr[i + (-row + 6) * (length - 1)] === 'O') ||
+                (newSquaresArr[i - row * (length - 1)] !== 'O' &&
+                  newSquaresArr[i + (-row + 6) * (length - 1)] !== 'O')) &&
+              newSquaresArr[i + (-row + 1) * (length - 1)] === 'X' &&
+              newSquaresArr[i + (-row + 2) * (length - 1)] === 'X' &&
+              newSquaresArr[i + (-row + 3) * (length - 1)] === 'X' &&
+              newSquaresArr[i + (-row + 4) * (length - 1)] === 'X' &&
+              newSquaresArr[i + (-row + 5) * (length - 1)] === 'X'
+            ) {
+              arrTem.push(i + (-row + 1) * (length - 1));
+              arrTem.push(i + (-row + 2) * (length - 1));
+              arrTem.push(i + (-row + 3) * (length - 1));
+              arrTem.push(i + (-row + 4) * (length - 1));
+              arrTem.push(i + (-row + 5) * (length - 1));
+              checkWin(arrTem);
+
+              Swal.fire({
+                imageUrl:
+                  'https://st.quantrimang.com/photos/image/2018/03/06/danh-co-caro-640.jpg',
+                title: 'HAPPY',
+                text: 'X is winner :)'
+              });
+            }
+          }
+          break;
+        }
+        default:
+          break;
       }
-      return null;
     }
     return null;
+    // }
+    // return null;
   };
 
   handleClickReset = () => {
@@ -382,7 +393,6 @@ class App extends React.Component {
 
   jumpTo = step => {
     const { state, goToMove, goToMoveWin, setfIsAuto } = this.props;
-    Promise.resolve(setfIsAuto());
     const { history, checkWin, arrWinTemp } = state;
     const length = history.length - 1;
     if (checkWin === true && step === length) {
@@ -390,10 +400,11 @@ class App extends React.Component {
     } else {
       goToMoveWin(step);
       if (step % 2 !== 0) {
-        setTimeout(() => {
-          this.handleClick(Math.floor(Math.random() * 399));
-        }, 500);
-        return null;
+        Promise.resolve(setfIsAuto()).then(() => {
+          setTimeout(() => {
+            this.handleClick(Math.floor(Math.random() * 399));
+          }, 500);
+        });
       }
     }
     return null;
@@ -447,7 +458,14 @@ class App extends React.Component {
 
   render() {
     const { state } = this.props;
-    const { history, stepNumber, xIsNext, arrWin, messages } = state;
+    const {
+      history,
+      stepNumber,
+      xIsNext,
+      arrWin,
+      messages,
+      withPerson
+    } = state;
     const current = history[stepNumber];
     const status = `Next player: ${xIsNext ? 'X' : 'O'}`;
     const movess = history.map((step, move) => {
@@ -455,11 +473,12 @@ class App extends React.Component {
       const keyIdx = move;
       if (move === stepNumber)
         return (
+          // <option style={{background: "#28A745"}} key={move} onClick={() => this.jumpTo(move)}><button>{desc}</button></option>
           <li key={keyIdx}>
             <button
               type="button"
               style={{ background: '#28A745' }}
-              // onClick={() => this.jumpTo(move)}
+              onClick={() => this.jumpTo(move)}
             >
               {desc}
             </button>
@@ -467,17 +486,19 @@ class App extends React.Component {
         );
 
       return (
+        // <option key={move} onClick={() => this.jumpTo(move)}>{desc}</option>
         <li key={keyIdx}>
-          <button
-            type="button"
-            // onClick={() => this.jumpTo(move)}
-          >
+          <button type="button" onClick={() => this.jumpTo(move)}>
             {desc}
           </button>
         </li>
       );
     });
+    // if (isDecrease) {
+    //   movess = this.sortHistory(movess);
+    // }
 
+    // console.log(moves[moves.length].key)
     return (
       <div className="game">
         <div className="game-board status2">
@@ -516,60 +537,60 @@ class App extends React.Component {
             <br />
             <br />
 
-            <div>
+            {/* <div>
               <button
                 type="button"
                 className="btn btn-success"
-                onClick={() =>
-                  this.jumpTo(Math.floor(Math.random() * (history.length - 1)))
-                }
+                onClick={() => this.fIncrease(moves)}
               >
-                Undo
+                Increase
               </button>
               &emsp;
               <button
                 type="button"
                 className="btn btn-success"
-                onClick={() => this.jumpTo(history.length - 1)}
+                onClick={() => this.fDecrease(moves)}
               >
-                Redo
+                Decrease
               </button>
-            </div>
+            </div> */}
           </div>
           <Board
             arrWins={arrWin}
             squares={current.squares}
-            onClick={index => this.handleClick(index)}
+            onClick={index => this.addStep(index)}
             color={xIsNext}
           />
         </div>
-        <div className="messenger" style={{ color: 'black' }}>
-          <div className="message-header">CHAT BOX</div>
-          <hr style={{ marginTop: '30px' }} />
+        {withPerson ? (
+          <div className="messenger" style={{ color: 'black' }}>
+            <div className="message-header">CHAT BOX</div>
+            <hr style={{ marginTop: '30px' }} />
 
-          <div className="message-body" id="message-body">
-            {messages}
+            <div className="message-body" id="message-body">
+              {messages}
+            </div>
+
+            <Form onSubmit={this.sendMessage} autoComplete="off">
+              <InputGroup
+                className="mb-3 message-input"
+                style={{ padding: '0px', margin: '0px' }}
+              >
+                <FormControl
+                  style={{ padding: '0px' }}
+                  aria-label="Recipient's username"
+                  aria-describedby="basic-addon2"
+                  name="messageText"
+                />
+                <InputGroup.Append>
+                  <Button variant="success" type="submit">
+                    Send
+                  </Button>
+                </InputGroup.Append>
+              </InputGroup>
+            </Form>
           </div>
-
-          <Form onSubmit={this.sendMessage} autoComplete="off">
-            <InputGroup
-              className="mb-3 message-input"
-              style={{ padding: '0px', margin: '0px' }}
-            >
-              <FormControl
-                style={{ padding: '0px' }}
-                aria-label="Recipient's username"
-                aria-describedby="basic-addon2"
-                name="messageText"
-              />
-              <InputGroup.Append>
-                <Button variant="success" type="submit">
-                  Send
-                </Button>
-              </InputGroup.Append>
-            </InputGroup>
-          </Form>
-        </div>
+        ) : null}
       </div>
     );
   }

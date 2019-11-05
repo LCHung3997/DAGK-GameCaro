@@ -4,7 +4,8 @@ import { withRouter } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import 'antd/dist/antd.css';
 import '../css/login.css';
-import Facebook from "../component/Facebook";
+import Facebook from '../component/Facebook';
+import Google from '../component/Google';
 
 class Login extends React.Component {
   handleSubmit = e => {
@@ -71,28 +72,25 @@ class Login extends React.Component {
             )}
           </Form.Item>
           {pending ? (
-              <div
-                style={{                  
-                  background: 'white',                  
-                  width: '100%',
-                  height: '100%',
-                  opacity: '60%',
-                  zIndex:1
-                }}
-              >
-                <Icon type="loading" style={{ fontSize: 24 }} />
-                
-              </div>
-            ) : (
-              ''
-            )}
+            <div
+              style={{
+                background: 'white',
+                width: '100%',
+                height: '100%',
+                opacity: '60%',
+                zIndex: 1
+              }}
+            >
+              <Icon type="loading" style={{ fontSize: 24 }} />
+            </div>
+          ) : (
+            ''
+          )}
           <Form.Item>
             {getFieldDecorator('remember', {
               valuePropName: 'checked',
               initialValue: true
             })(<Checkbox>Remember me</Checkbox>)}
-
-            
 
             <Button
               type="primary"
@@ -104,10 +102,12 @@ class Login extends React.Component {
           </Form.Item>
         </Form>
         <div className="App">
-        <Facebook />
-        <br />
-        <br />
-      </div>
+          <Facebook />
+          or
+          <Google />
+          
+        </div>
+        
       </div>
     );
   }

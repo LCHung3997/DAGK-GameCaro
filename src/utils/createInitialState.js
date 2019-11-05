@@ -21,6 +21,7 @@ const createInitialState = () => ({
     isAuto: false,
     messages: [],
     index: -1,
+    withPerson: false,
 
 })
 

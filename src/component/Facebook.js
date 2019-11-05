@@ -5,10 +5,7 @@ import { fecthAccount,loginAccount } from '../actions/indexAction';
 
 class Facebook extends Component {
   responseFacebook = response => {
-    console.log(
-      'fb',
-      response.email
-    );
+   
     const { registerAcc, logAccount } = this.props;
     Promise.resolve(
       registerAcc(

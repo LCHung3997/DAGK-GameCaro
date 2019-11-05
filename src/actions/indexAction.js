@@ -19,7 +19,9 @@ import {
   EDIT_PASS,
   SET_AUTO,
   FALSE_AUTO,
-  PUSH_MESSAGE
+  PUSH_MESSAGE,
+  PLAY_ONLINE,
+  PLAY_OFFLINE
 } from '../constants/actions';
 
 export const tickSquare = (index, newSquaresArr, history, xIsNext) => ({
@@ -37,6 +39,14 @@ export const setFalseIsAuto = () => ({
 export const pushMessage = (message) => ({
   type: PUSH_MESSAGE,
   message
+})
+
+export const dispatchOnline = () => ({
+  type: PLAY_ONLINE,
+})
+
+export const dispatchOffline = () => ({
+  type: PLAY_OFFLINE,
 })
 
 export const setAuto = isAuto => ({

@@ -48,7 +48,10 @@ const tickSquare = (state = createInitialState(), action) => {
         isIncrease: true,
         isDecrease: false,
         error: {},
-        isAuto: false
+        isAuto: false,
+        withPerson: false,
+        messages: [],
+        index: -1
       };
     case 'GOTO_MOVE':
       return {
@@ -124,6 +127,17 @@ const tickSquare = (state = createInitialState(), action) => {
         ...state,
         error: action.payload
       };
+    case 'PLAY_ONLINE':
+      return {
+        ...state,
+        withPerson: true
+      };
+    case 'PLAY_OFFLINE':
+      return {
+        ...state,
+        withPerson: false
+      };
+
     case 'CONFIRM_REGISTER':
       return {
         ...state
