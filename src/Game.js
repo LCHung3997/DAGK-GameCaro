@@ -15,6 +15,8 @@ import MapLogin from './containers/MapLogin';
 import { getProfileFetch, restartGame } from './actions/indexAction';
 import MappProfile from './containers/MappProfile';
 import MapPass from './containers/MapPass';
+import MapApp from './containers/MapApp';
+
 
 class Game extends React.PureComponent {
   componentDidMount = () => {
@@ -71,6 +73,12 @@ class Game extends React.PureComponent {
                 </Route>
                 <Route path="/editpassword">
                   <MapPass />
+                </Route>
+                <Route  path="/playOnline">
+                  <MapApp />
+                </Route>
+                <Route  path="/playwithboss">
+                  <MapApp />
                 </Route>
 
                 <Route path="/login">

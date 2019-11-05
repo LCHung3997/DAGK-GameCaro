@@ -127,7 +127,7 @@ export const pendingLogin = () => ({
 export const fecthAccount = (Username, Password, gmail, gender, avatar) => {
   return dispatch => {
     return axios
-      .post('http://localhost:5000/user/register', {
+      .post('https://api-caro-lchung.herokuapp.com/user/register', {
         Username,
         Password,
         gmail,
@@ -145,7 +145,7 @@ export const fecthAccount = (Username, Password, gmail, gender, avatar) => {
 export const updateInfor = (ID, gmail, Username, gender, avatar, Password) => {
   return dispatch => {
     return axios
-      .post('http://localhost:5000/editprofile', {
+      .post('https://api-caro-lchung.herokuapp.com/editprofile', {
         ID,
         Username,
         gender,
@@ -167,7 +167,7 @@ export const loginAccount = (gmail, Password) => {
   return dispatch => {
     dispatch(pendingLogin());
     return axios
-      .post('https://lchung-passport-jwt.herokuapp.com/user/login', {
+      .post('https://api-caro-lchung.herokuapp.com/user/login', {
         gmail,
         Password
       })
@@ -193,7 +193,7 @@ export const getProfileFetch = () => {
     const tokens = localStorage.token;
     if (tokens) {
       return axios
-        .get('https://lchung-passport-jwt.herokuapp.com/me', {
+        .get('https://api-caro-lchung.herokuapp.com/me', {
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
@@ -218,7 +218,7 @@ export const updatePass = (ID, gmail, Username, gender, avatar, Password) => {
   console.log('pass', Password);
   return dispatch => {
     return axios
-      .post('http://localhost:5000/editpass', {
+      .post('https://api-caro-lchung.herokuapp.com/editpass', {
         ID,
         Password
       })

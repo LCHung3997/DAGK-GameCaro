@@ -6,46 +6,47 @@ import '../css/App.css';
 import Board from './Board';
 
 const messagesList = [];
-// let usernameNow = '';
 let youNext = true;
-const io = SocketIO.connect('http://localhost:5000');
+const io = SocketIO.connect('https://api-caro-lchung.herokuapp.com/');
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    const { state } = this.props;
-    const { currentUser } = state;
-    io.on('BroadcastMessage', message => {
-      messagesList.push(
-        <div
-          style={
-            currentUser.Username === message.user.Username
-              ? { textAlign: '-webkit-right', marginBottom: '10px' }
-              : { textAlign: '-webkit-left', marginBottom: '10px' }
-          }
-        >
-          <div className="message-time">{message.user.Username}</div>
+    constructor(props) {
+      super(props);
+      const { state } = this.props;
+      const { currentUser } = state;
+      io.on('BroadcastMessage', message => {
+        messagesList.push(
           <div
-            className="message-text"
-            style={{ background: 'linear-gradient(#02aab0, #00cdac)' }}
+            style={
+              currentUser.Username === message.user.Username
+                ? { textAlign: '-webkit-right', marginBottom: '10px' }
+                : { textAlign: '-webkit-left', marginBottom: '10px' }
+            }
           >
-            {message.value}
+            <div className="message-time">{message.user.Username}</div>
+            <div
+              className="message-text"
+              style={{ background: 'linear-gradient(#02aab0, #00cdac)' }}
+            >
+              {message.value}
+            </div>
           </div>
-        </div>
-      );
+        );
 
-      const { pushMessage } = this.props;
-      pushMessage(messagesList);
-    });
-
-    io.on('NewStep', message => {
-      if (message.user.Username !== currentUser.Username) {
-        youNext = true;
-      } else {
-        youNext = false;
-      }
-      this.handleClick(message.index);
-    });
-  }
+        const { pushMessage } = this.props;
+        pushMessage(messagesList);
+      });
+      
+      io.on('NewStep', message => {
+        if (message.user.Username !== currentUser.Username) {
+          youNext = true;
+        } else {
+          youNext = false;
+        }
+         this.handleClick(message.index);
+      });
+      
+    }
+    
 
   componentDidUpdate = () => {
     const { state } = this.props;
@@ -377,6 +378,7 @@ class App extends React.Component {
 
   handleClickReset = () => {
     const { restartGame } = this.props;
+    youNext = true;
     restartGame();
   };
 
@@ -388,7 +390,7 @@ class App extends React.Component {
       value: e.target.messageText.value,
       user: currentUser,
       index: state.index
-    });
+    });      
   };
 
   jumpTo = step => {
