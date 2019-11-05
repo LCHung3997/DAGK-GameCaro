@@ -49,7 +49,6 @@ const tickSquare = (state = createInitialState(), action) => {
         isDecrease: false,
         error: {},
         isAuto: false,
-        withPerson: false,
         messages: [],
         index: -1
       };

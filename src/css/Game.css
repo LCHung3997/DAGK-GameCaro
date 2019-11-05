@@ -9,6 +9,9 @@ ul{
     width: 100%;
     margin: auto;
 }
+.tempcss{
+  margin: inherit;
+}
 .divmax{
 
     display: flex;

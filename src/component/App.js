@@ -517,23 +517,24 @@ class App extends React.Component {
             </button>
             <br />
             <br />
-            <br />
-            <div className="table-wrapper-scroll-y my-custom-scrollbar">
-              <table className="  table table-bordered table-striped mb-0">
-                <thead>
-                  <tr>
-                    <th className="App" scope="col">
-                      MoveList
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">{movess}</th>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            {withPerson ? null :  (
+              <div className="table-wrapper-scroll-y my-custom-scrollbar">
+                <table className="  table table-bordered table-striped mb-0">
+                  <thead>
+                    <tr>
+                      <th className="App" scope="col">
+                        MoveList
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">{movess}</th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ) }
             <br />
             <br />
 

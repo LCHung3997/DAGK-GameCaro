@@ -106,7 +106,7 @@ class Board extends React.Component {
     return (
       <div className="shadow pl-3 pr-3 pb-3 mt-3 bg-white rounded ">
         <div className="status1">
-          <h3>GAME CARRO</h3>
+          <h3>GAME CARO</h3>
           {itemss}
         </div>
       </div>

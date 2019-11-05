@@ -40,7 +40,7 @@ class Login extends React.Component {
     const { pending } = state;
 
     return (
-      <div className="shadow-lg m-5 p-5 Container">
+      <div className="shadow-lg mt-5 p-5 Container">
         <h3 className="h3">LOGIN</h3>
         <Form onSubmit={this.handleSubmit} className="login-form">
           <Form.Item>

@@ -55,7 +55,7 @@ class Register extends React.Component {
     const {pending} = state
     
     return (
-      <div className="shadow-lg m-5 p-5 register">
+      <div className="shadow-lg mt-5 p-5 register">
         <h3 className="h3">REGISTER</h3>
         <Form onSubmit={this.handleSubmit} className="login-form">
           <Form.Item>

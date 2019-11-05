@@ -12,14 +12,21 @@
 .Container {
   width: 65%;
   height: 550px;
+  margin: inherit;
 }
 .h3{
-    margin-left: 200px;
+  text-align: center;
     padding-bottom: 10px;
 }
 .register{
+  margin: inherit;
     width: 65%;
   height: 500px;
+}
+.changpass{
+  width: 65%;
+  height: 400px;
+  margin: inherit;
 }
 
 button {
