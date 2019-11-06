@@ -7,7 +7,7 @@ import Board from './Board';
 
 const messagesList = [];
 let youNext = true;
-const io = SocketIO.connect('https://api-caro-lchung.herokuapp.com/');
+const io = SocketIO.connect('http://localhost:5000');
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -24,10 +24,7 @@ class App extends React.Component {
           }
         >
           <div className="message-time">{message.user.Username}</div>
-          <div
-            className="message-text"
-            style={{ background: 'linear-gradient(#02aab0, #00cdac)' }}
-          >
+          <div className="message-text" style={{ background: '#A0DE96' }}>
             {message.value}
           </div>
         </div>
@@ -43,8 +40,17 @@ class App extends React.Component {
       } else {
         youNext = false;
       }
-      console.log(message);
       this.handleClick(message.index);
+    });
+
+    io.on('broadcastRQUndo', message => {
+      if (message.user.Username !== currentUser.Username) {
+        Swal.fire({
+          type: 'error',
+          title: 'Account or password not found!!!',
+          text: 'Try again!!!'
+        });
+      }
     });
   }
 
@@ -63,7 +69,7 @@ class App extends React.Component {
       }, 100);
     }
     return null;
-  };
+  };  
 
   addStep = i => {
     const { state } = this.props;
@@ -73,7 +79,8 @@ class App extends React.Component {
         const { currentUser } = state;
         io.emit('AddStep', { index: i, user: currentUser });
       }
-    } else {
+    } 
+    else {
       this.handleClick(i);
     }
   };
@@ -81,11 +88,11 @@ class App extends React.Component {
   handleClick = i => {
     const { state } = this.props;
     const { isAuto } = state;
-    let { history } = state;
+    const { history } = state;
     const { stepNumber, check, xIsNext } = state;
     const { tickSquares, checkWin } = this.props;
-    history = history.slice(0, stepNumber + 1);
-    const current = history[history.length - 1];
+    const history1 = history.slice(0, stepNumber + 1);
+    const current = history1[history1.length - 1];
     const newSquaresArr = current.squares.slice();
     if (check) {
       Swal.fire({
@@ -386,6 +393,16 @@ class App extends React.Component {
     });
   };
 
+  requireJumto = i => {
+    const { state } = this.props;
+    const { currentUser } = state;
+
+    io.emit('rqUndo', {
+      index: i,
+      user: currentUser
+    });
+  };
+
   jumpTo = step => {
     const { state, goToMove, goToMoveWin, setfIsAuto } = this.props;
     const { history, checkWin, arrWinTemp } = state;
@@ -527,16 +544,19 @@ class App extends React.Component {
               </div>
             )}
             <br />
-            <br />
+            {withPerson ? (
+              <div>
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => this.requireJumto(history.length - 1)}
+                >
+                  Undo
+                </button>
+              </div>
+            ) : null}
 
-            {/* <div>
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={() => this.fIncrease(moves)}
-              >
-                Increase
-              </button>
+            {/* 
               &emsp;
               <button
                 type="button"

@@ -6,7 +6,7 @@ import {
   Link,
   Redirect
 } from 'react-router-dom';
-import { Icon } from 'antd';
+import { Icon, Avatar } from 'antd';
 import { connect } from 'react-redux';
 import HomePage from './component/HomePage';
 import MapRegister from './containers/MapRegister';
@@ -36,7 +36,6 @@ class Game extends React.PureComponent {
     const { currentUser } = state;
     
     if (tokenn != null) {
-      console.log('user',state)
       return (
         <Router>
           <div className="sidenav">
@@ -44,7 +43,9 @@ class Game extends React.PureComponent {
               {currentUser.Username ? (
                 <li className="user">
                   <Link to="/profile">
-                    <Icon className="icon" type="user" /> {currentUser.Username}
+                  <Avatar size={64} src={currentUser.avatar}  />
+                   <br/>
+                   {currentUser.Username}
                   </Link>
                 </li>
               ) : null}

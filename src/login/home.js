@@ -20,9 +20,13 @@ class Login extends React.Component {
             const tokens = localStorage.token;
             if (tokens === undefined) {
               Swal.fire({
-                type: 'error',
-                title: 'Account or password not found!!!',
-                text: 'Try again!!!'
+                type: 'success',
+                title: 'Register succeed',
+                confirmButtonText: 'LOGIN'
+              }).then(result => {
+                if (result.value) {
+                  history.push('/login');
+                }
               });
             } else {
               history.push('/home');

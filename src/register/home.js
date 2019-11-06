@@ -1,21 +1,62 @@
 import React from 'react';
 import Swal from 'sweetalert2';
-import { Form, Input, Button, Icon, Select } from 'antd';
+import { Upload, Form, Input, Button, Icon, Select, message } from 'antd';
 import { withRouter } from 'react-router-dom';
 import 'antd/dist/antd.css';
 import '../css/login.css';
 
 const { Option } = Select;
 
+const getBase64 = (img, callback) => {
+  const reader = new FileReader();
+  reader.addEventListener('load', () => callback(reader.result));
+  reader.readAsDataURL(img);
+};
+
+const beforeUpload = file => {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!isJpgOrPng) {
+    message.error('You can only upload JPG/PNG file!');
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('Image must smaller than 2MB!');
+  }
+  return isJpgOrPng && isLt2M;
+};
+
 class Register extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false
+    };
+  }
+
+  handleChange = info => {
+    if (info.file.status === 'uploading') {
+      this.setState({ loading: true });
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, imageUrl =>
+        this.setState({
+          imageUrl,
+          loading: false
+        })
+      );
+    }
+  };
+
   handleSubmit = e => {
     e.preventDefault();
-    
+
     const { form, history, restartGame } = this.props;
-    restartGame()
+    restartGame();
     form.validateFields((err, values) => {
       if (!err) {
-        // console.log('Received values of form: ', values);
+        console.log('Received values of form: ', values.avatar);
         const { registerAcc } = this.props;
         Promise.resolve(
           registerAcc(
@@ -23,10 +64,10 @@ class Register extends React.Component {
             values.Password,
             values.gmail,
             values.gender,
-            values.avatar
-          )
+            `http://localhost:5000/images/${values.avatar.file.name}`
+            )
         ).then(() => {
-          const{state}  = this.props;
+          const { state } = this.props;
           if (state.error.status === '200') {
             Swal.fire({
               type: 'success',
@@ -40,7 +81,7 @@ class Register extends React.Component {
           } else {
             Swal.fire({
               type: 'error',
-              title: 'Account already exists for your email address',
+              title: 'Account already exists for your email address'
             });
           }
         });
@@ -51,9 +92,16 @@ class Register extends React.Component {
   render() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
-    const {state} = this.props;
-    const {pending} = state
-    
+    const { state } = this.props;
+    const { pending } = state;
+    const { loading } = this.state;
+    const uploadButton = (
+      <div>
+        <Icon type={loading ? 'loading' : 'plus'} />
+        <div className="ant-upload-text">Upload</div>
+      </div>
+    );
+    const { imageUrl } = this.state;
     return (
       <div className="shadow-lg mt-5 p-5 register">
         <h3 className="h3">REGISTER</h3>
@@ -116,42 +164,46 @@ class Register extends React.Component {
               </Select>
             )}
           </Form.Item>
-
+          
           <Form.Item>
             {getFieldDecorator('avatar', {
               rules: [
                 { required: true, message: 'Please input link your avatar!' }
               ]
             })(
-              <Input
-                prefix={
-                  <Icon
-                    type="file-image"
-                    style={{ color: 'rgba(0,0,0,.25)' }}
-                  />
-                }
-                placeholder="link avatar"
-              />
+              <Upload
+            name="avatar"
+            listType="picture-card"
+            className="avatar-uploader"
+            showUploadList={false}
+            action="http://localhost:5000/photo"
+            beforeUpload={beforeUpload}
+            onChange={this.handleChange}
+          >
+            {imageUrl ? (
+              <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
+            ) : (
+              uploadButton
+            )}
+          </Upload>
             )}
           </Form.Item>
           {pending ? (
-              <div
-                style={{                  
-                  background: 'white',
-                  
-                  width: '100%',
-                  height: '100%',
-                  opacity: '60%',
-                  zIndex:1
-                }}
-              >
-                <Icon type="loading" style={{ fontSize: 24 }} />
-                
-              </div>
-            ) : (
-              ''
-            )}
+            <div
+              style={{
+                background: 'white',
 
+                width: '100%',
+                height: '100%',
+                opacity: '60%',
+                zIndex: 1
+              }}
+            >
+              <Icon type="loading" style={{ fontSize: 24 }} />
+            </div>
+          ) : (
+            ''
+          )}
 
           <Form.Item>
             <Button
