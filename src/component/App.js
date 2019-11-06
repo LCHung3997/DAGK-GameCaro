@@ -9,46 +9,45 @@ const messagesList = [];
 let youNext = true;
 const io = SocketIO.connect('https://api-caro-lchung.herokuapp.com/');
 class App extends React.Component {
-    constructor(props) {
-      super(props);
-      const { state } = this.props;
-      const { currentUser } = state;
+  constructor(props) {
+    super(props);
+    const { state } = this.props;
+    const { currentUser } = state;
 
-      io.on('BroadcastMessage', message => {
-        messagesList.push(
+    io.on('BroadcastMessage', message => {
+      messagesList.push(
+        <div
+          style={
+            currentUser.Username === message.user.Username
+              ? { textAlign: '-webkit-right', marginBottom: '10px' }
+              : { textAlign: '-webkit-left', marginBottom: '10px' }
+          }
+        >
+          <div className="message-time">{message.user.Username}</div>
           <div
-            style={
-              currentUser.Username === message.user.Username
-                ? { textAlign: '-webkit-right', marginBottom: '10px' }
-                : { textAlign: '-webkit-left', marginBottom: '10px' }
-            }
+            className="message-text"
+            style={{ background: 'linear-gradient(#02aab0, #00cdac)' }}
           >
-            <div className="message-time">{message.user.Username}</div>
-            <div
-              className="message-text"
-              style={{ background: 'linear-gradient(#02aab0, #00cdac)' }}
-            >
-              {message.value}
-            </div>
+            {message.value}
           </div>
-        );
+        </div>
+      );
 
-        const { pushMessage } = this.props;
-        pushMessage(messagesList);
-      });
-      
-      io.on('NewStep', message => {
-        if (message.user.Username !== currentUser.Username) {
-          youNext = true;
-        } else {
-          youNext = false;
-        }
-        console.log(message);
-         this.handleClick(message.index);
-      });
-      
-    }
-  
+      const { pushMessage } = this.props;
+      pushMessage(messagesList);
+    });
+
+    io.on('NewStep', message => {
+      if (message.user.Username !== currentUser.Username) {
+        youNext = true;
+      } else {
+        youNext = false;
+      }
+      console.log(message);
+      this.handleClick(message.index);
+    });
+  }
+
   componentDidUpdate = () => {
     const { state } = this.props;
     const { isAuto, check, withPerson } = state;
@@ -61,7 +60,7 @@ class App extends React.Component {
     if (isAuto === true) {
       setTimeout(() => {
         this.handleClick(Math.floor(Math.random() * 399));
-      }, 500);
+      }, 100);
     }
     return null;
   };
@@ -69,15 +68,12 @@ class App extends React.Component {
   addStep = i => {
     const { state } = this.props;
     const { withPerson } = state;
-    console.log(state);
     if (withPerson) {
       if (youNext) {
-        console.log('------------------------');
         const { currentUser } = state;
         io.emit('AddStep', { index: i, user: currentUser });
-      } 
-    }
-    else {
+      }
+    } else {
       this.handleClick(i);
     }
   };
@@ -91,8 +87,6 @@ class App extends React.Component {
     history = history.slice(0, stepNumber + 1);
     const current = history[history.length - 1];
     const newSquaresArr = current.squares.slice();
-
-
     if (check) {
       Swal.fire({
         imageUrl:
@@ -104,14 +98,11 @@ class App extends React.Component {
     }
 
     if (newSquaresArr[i] === null) {
-      // console.log('1',currentUser.Username,'2', usernameNow)
-
       const { setAuto } = this.props;
       setAuto(isAuto);
       const length = 20;
       const arrTem = [];
       newSquaresArr[i] = xIsNext ? 'X' : 'O';
-      // dispatch action
       tickSquares(i, newSquaresArr, history, xIsNext);
 
       switch (newSquaresArr[i]) {
@@ -376,8 +367,6 @@ class App extends React.Component {
       }
     }
     return null;
-    // }
-    // return null;
   };
 
   handleClickReset = () => {
@@ -394,7 +383,7 @@ class App extends React.Component {
       value: e.target.messageText.value,
       user: currentUser,
       index: state.index
-    });      
+    });
   };
 
   jumpTo = step => {
@@ -406,11 +395,7 @@ class App extends React.Component {
     } else {
       goToMoveWin(step);
       if (step % 2 !== 0) {
-        Promise.resolve(setfIsAuto()).then(() => {
-          setTimeout(() => {
-            this.handleClick(Math.floor(Math.random() * 399));
-          }, 500);
-        });
+        setfIsAuto();
       }
     }
     return null;
@@ -523,7 +508,7 @@ class App extends React.Component {
             </button>
             <br />
             <br />
-            {withPerson ? null :  (
+            {withPerson ? null : (
               <div className="table-wrapper-scroll-y my-custom-scrollbar">
                 <table className="  table table-bordered table-striped mb-0">
                   <thead>
@@ -540,7 +525,7 @@ class App extends React.Component {
                   </tbody>
                 </table>
               </div>
-            ) }
+            )}
             <br />
             <br />
 
