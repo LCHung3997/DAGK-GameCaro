@@ -20,13 +20,8 @@ class Login extends React.Component {
             const tokens = localStorage.token;
             if (tokens === undefined) {
               Swal.fire({
-                type: 'success',
-                title: 'Register succeed',
-                confirmButtonText: 'LOGIN'
-              }).then(result => {
-                if (result.value) {
-                  history.push('/login');
-                }
+                type: 'error',
+                title: 'Account not exists'
               });
             } else {
               history.push('/home');
