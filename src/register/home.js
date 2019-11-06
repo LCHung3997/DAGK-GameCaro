@@ -64,7 +64,7 @@ class Register extends React.Component {
             values.Password,
             values.gmail,
             values.gender,
-            `http://localhost:5000/images/${values.avatar.file.name}`
+            `https://restfullapi-1612241.herokuapp.com/images/${values.avatar.file.name}`
             )
         ).then(() => {
           const { state } = this.props;
@@ -176,7 +176,7 @@ class Register extends React.Component {
             listType="picture-card"
             className="avatar-uploader"
             showUploadList={false}
-            action="http://localhost:5000/photo"
+            action="https://restfullapi-1612241.herokuapp.com/photo"
             beforeUpload={beforeUpload}
             onChange={this.handleChange}
           >

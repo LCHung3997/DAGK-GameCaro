@@ -38,19 +38,23 @@ const tickSquare = (state = createInitialState(), action) => {
         ...state,
         history: [
           {
-            squares: Array(400).fill(null)
+              squares: Array(400).fill(null)
           }
-        ],
-        arrWin: [],
-        stepNumber: 0,
-        xIsNext: true,
-        check: false,
-        isIncrease: true,
-        isDecrease: false,
-        error: {},
-        isAuto: false,
-        messages: [],
-        index: -1
+      ],
+      arrWin: [],
+      arrWinTemp: [],
+      stepNumber: 0,
+      xIsNext: true,
+      check: false,
+      checkWin: false,
+      moves: [],
+      isIncrease: true,
+      isDecrease: false,
+      error:{},
+      pending: false,
+      isAuto: false,
+      messages: [],
+      index: -1,
       };
     case 'GOTO_MOVE':
       return {

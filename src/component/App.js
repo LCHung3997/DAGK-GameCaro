@@ -7,7 +7,7 @@ import Board from './Board';
 
 const messagesList = [];
 let youNext = true;
-const io = SocketIO.connect('http://localhost:5000');
+const io = SocketIO.connect('https://restfullapi-1612241.herokuapp.com/');
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -54,6 +54,7 @@ class App extends React.Component {
     });
   }
 
+  
   componentDidUpdate = () => {
     const { state } = this.props;
     const { isAuto, check, withPerson } = state;
@@ -64,9 +65,8 @@ class App extends React.Component {
       return null;
     }
     if (isAuto === true) {
-      setTimeout(() => {
         this.handleClick(Math.floor(Math.random() * 399));
-      }, 100);
+
     }
     return null;
   };  
@@ -78,6 +78,7 @@ class App extends React.Component {
       if (youNext) {
         const { currentUser } = state;
         io.emit('AddStep', { index: i, user: currentUser });
+        this.handleClick(i);
       }
     } 
     else {
@@ -391,6 +392,7 @@ class App extends React.Component {
       user: currentUser,
       index: state.index
     });
+    e.target.messageText.value = '';
   };
 
   requireJumto = i => {
